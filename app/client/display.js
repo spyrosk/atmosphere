@@ -76,8 +76,9 @@
   });
   
   Template.packages.packages = function() {
-    keywords = new RegExp(Session.get("search_keywords"), "i");
-    return Packages.find({$or:[{name:keywords},{description:keywords}]}, {sort: {'updatedAt': -1}});
+    //keywords = new RegExp(Session.get("search_keywords"), "i");
+    return Packages.find({/*$or:[{name:keywords},{description:keywords}]*/}, {sort: {'updatedAt': -1}});
+    //original return Packages.find({$or:[{name:keywords},{description:keywords}]}, {sort: {'updatedAt': -1}});
   };
 
   // TEMP
@@ -96,6 +97,30 @@
 
   Template.packages.packagesLoading = function() {
     return Session.get('packages.loading');
+  };
+  
+  Template.packages.pager = function() {
+
+    var perPage = Session.get("perPage");//index starts at 0
+    var pageNumber = Session.get("pageNumber");
+    var pager = new Object;
+    pager.pagerPreviousEnabled = false;
+    pager.pagerNextEnabled = false;
+
+    var count = PackagesCount.findOne().count;
+
+    if (pageNumber > 0) {
+      pager.pagerPreviousEnabled = true;
+    }
+
+    if (perPage * pageNumber + perPage < count) {
+      pager.pagerNextEnabled = true;
+    }
+
+    pager.endPage = Math.max(Math.floor((count - 1)/perPage+1), 0);
+    pager.currentPage = pageNumber + 1;
+
+    return pager;
   };
   
   Template.package.package = function() {
@@ -167,6 +192,15 @@
     'keyup [name=search]':function(e,context) {
       Meteor.Router.to('/');
       Session.set("search_keywords", e.currentTarget.value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&"));
+    },
+    'click .pager-prev': function() {
+      var page = Session.get("pageNumber") || 0;
+      if (page > 0) {Session.set("pageNumber", page - 1);}
+    },
+
+    'click .pager-next' : function() {
+      var page = Session.get("pageNumber") || 0;
+      Session.set("pageNumber", page + 1);
     }
   };
   

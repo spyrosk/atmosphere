@@ -97,6 +97,11 @@
           {{/each}}
         </tbody>
       </table>
+      <div class="pager">
+        <button class="btn btn-large pager-prev"{{#unless pager.pagerPreviousEnabled}} disabled="disabled"{{/unless}}><i class="icon icon-chevron-left"></i></button>
+        {{pager.currentPage}} of {{pager.endPage}}
+        <button class="btn btn-large pager-next"{{#unless pager.pagerNextEnabled}} disabled="disabled"{{/unless}}><i class="icon icon-chevron-right"></i></button>
+      </div>
     {{else}}
       <p>add some packages. or don't.</p>
     {{/ifAny}}
